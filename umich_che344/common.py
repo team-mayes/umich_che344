@@ -8,6 +8,7 @@ import os
 from matplotlib import rc
 import matplotlib.pyplot as plt
 from matplotlib.ticker import AutoMinorLocator
+import numpy as np
 
 __author__ = 'hbmayes'
 
@@ -17,6 +18,12 @@ Exit Codes:
 """
 # The good status code
 GOOD_RET = 0
+
+# physical constants
+J_TO_CAL = 4.184
+R_J = 8.314472 # J / K mol
+R_CAL = R_J / J_TO_CAL
+R_KCAL = R_CAL * 0.001
 
 # for figures
 DEF_FIG_WIDTH = 10
@@ -41,12 +48,13 @@ def save_figure(name, save_fig=True, fig_dir=DEF_FIG_DIR):
         plt.savefig(fig_dir + name, bbox_inches='tight')
 
 
-def make_fig(name, x_array, y1_array, y1_label="", ls1="-",
+def make_fig(name, x_array, y1_array, y1_label="", ls1="-", color1="blue",
              x2_array=None, y2_array=None, y2_label="", ls2='--', color2='orange',
              x3_array=None, y3_array=None, y3_label="", ls3=':',
              x4_array=None, y4_array=None, y4_label="", ls4='-.',
              x5_array=None, y5_array=None, y5_label="", ls5='-',
-             x_label="", y_label="", x_lima=None, x_limb=None, y_lima=None, y_limb=None, loc=2,
+             x_fill=None, y_fill=None, x2_fill=None, y2_fill=None,
+             x_label="", y_label="", x_lima=None, x_limb=None, y_lima=None, y_limb=None, loc=0,
              fig_width=DEF_FIG_WIDTH, fig_height=DEF_FIG_HEIGHT, axis_font_size=DEF_AXIS_SIZE,
              tick_font_size=DEF_TICK_SIZE):
     """
@@ -55,7 +63,7 @@ def make_fig(name, x_array, y1_array, y1_label="", ls1="-",
     rc('text', usetex=True)
     # a general purpose plotting routine; can plot between 1 and 5 curves
     fig, ax = plt.subplots(figsize=(fig_width, fig_height))
-    ax.plot(x_array, y1_array, ls1, label=y1_label, linewidth=2, color='blue')
+    ax.plot(x_array, y1_array, ls1, label=y1_label, linewidth=2, color=color1)
     if y2_array is not None:
         if x2_array is None:
             x2_array = x_array
@@ -71,7 +79,7 @@ def make_fig(name, x_array, y1_array, y1_label="", ls1="-",
     if y5_array is not None:
         if x5_array is None:
             x5_array = x_array
-        ax.plot(x5_array, y5_array, label=y5_label, ls=ls5, linewidth=3, color='yellow')
+        ax.plot(x5_array, y5_array, label=y5_label, ls=ls5, linewidth=3, color='purple')
     ax.set_xlabel(x_label, fontsize=axis_font_size)
     ax.set_ylabel(y_label, fontsize=axis_font_size)
     if x_limb is not None:
@@ -83,6 +91,12 @@ def make_fig(name, x_array, y1_array, y1_label="", ls1="-",
         if y_lima is None:
             y_lima = 0.0
         ax.set_ylim([y_lima, y_limb])
+
+    if x_fill is not None:
+        plt.fill_between(x_fill, y_fill, 0, color=color1, alpha='0.75')
+
+    if x2_fill is not None:
+        plt.fill_between(x2_fill, y2_fill, 0, color=color2, alpha='0.5')
 
     ax.tick_params(labelsize=tick_font_size)
     ax.xaxis.set_minor_locator(AutoMinorLocator(5))
