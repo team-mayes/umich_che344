@@ -23,7 +23,7 @@ def ode(y, t, k, k_c, cao):
     :param cao: initial concentration
     :return: dy_dt
     """
-    return 2.0 * k * cao * (cao * np.square(1.0-y) - y * 0.5 / k_c)
+    return 2.0 * k * (cao * np.square(1.0-y) - y * 0.5 / k_c)
 
 
 def solve_ode():
@@ -32,13 +32,13 @@ def solve_ode():
     """
     fig_name = "lect4"
 
-    k = 5.0  # L/mol s
+    k = 0.2  # L/mol s
     k_c = 20.0  # L/mol
     cao = 0.2  # mol/L
     x0 = 0.0  # initial conversion
 
     t_start = 0.0
-    t_end = 25.0
+    t_end = 60.0
     time = np.linspace(t_start, t_end, 1001)  # seconds
     conv = odeint(ode, x0, time, args=(k, k_c, cao))
 

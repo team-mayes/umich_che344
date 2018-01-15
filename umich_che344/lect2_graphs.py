@@ -44,14 +44,14 @@ def graph_points():
     # given data
     x = np.array([0.0, 0.4, 0.6, 0.8])
     ra = np.array([0.01, 0.0080, 0.005, 0.002])
-    design_eq =np.divide(2.0, ra)
+    design_eq = np.divide(2.0, ra)
     print("Generic example design equation points: {}".format(["{:0.1f}".format(x) for x in design_eq]))
 
     # cubic spline
-    xnew = np.linspace(0.0, 0.8, 101)
+    x_new = np.linspace(0.0, 0.8, 101)
     # alternately, from interpolation
     y_interp = interpolate.interp1d(x, design_eq, kind='quadratic')
-    make_fig(fig_name, x, design_eq, ls1='o', x2_array=xnew, y2_array=y_interp(xnew),
+    make_fig(fig_name, x, design_eq, ls1='o', x2_array=x_new, y2_array=y_interp(x_new),
              x_label=r'conversion (X, unitless)', y_label=r'$\displaystyle\frac{F_{A0}}{-r_A} \left(L\right)$',
              x_lima=0.0, x_limb=0.8, y_lima=0.0, y_limb=1000,
              fig_width=4, color2='green',
@@ -68,16 +68,17 @@ def graph_smooth_from_pts():
     # given data
     x = np.array([0.0, 0.2, 0.4, 0.6, 0.65])
     ra = np.array([39.0, 53.0, 59.0, 38.0, 25.0])
-    design_eq =np.divide(50.0, ra)
+    design_eq = np.divide(50.0, ra)
     print("Isom example design equation points: {}".format(design_eq))
 
     # cubic spline
     tck = interpolate.splrep(x, design_eq, s=0)
-    xnew = np.linspace(0.0, 0.7, 101)
-    ynew = interpolate.splev(xnew, tck, der=0)
+    x_new = np.linspace(0.0, 0.7, 101)
+    y_new = interpolate.splev(x_new, tck, der=0)
     # alternately, from interpolation
     cubic_interp = interpolate.interp1d(x, design_eq, kind='quadratic', fill_value="extrapolate")
-    make_fig(fig_name, x, design_eq, ls1='o', x2_array=xnew, y2_array=ynew, x3_array=xnew, y3_array=cubic_interp(xnew),
+    make_fig(fig_name, x, design_eq, ls1='o', x2_array=x_new, y2_array=y_new,
+             x3_array=x_new, y3_array=cubic_interp(x_new),
              y1_label="data", y2_label="quadratic", y3_label="cubic",
              x_label=r'conversion (X, unitless)', y_label=r'$\displaystyle\frac{F_{A0}}{-r_A} \left(m^3\right)$',
              x_lima=0.0, x_limb=0.7, y_lima=0.0, y_limb=2.5,

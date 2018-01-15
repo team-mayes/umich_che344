@@ -10,68 +10,10 @@ from __future__ import print_function
 import sys
 import numpy as np
 from scipy.integrate import odeint
-import matplotlib.pyplot as plt
-from matplotlib.ticker import AutoMinorLocator
-
-__author__ = 'hmayes'
-
-"""
-Exit Codes:
-0 = Success
-"""
-# The good status code
-GOOD_RET = 0
-
-# for figures
-fig_width = 10
-fig_height = 6
-axis_font_size = 20
-tick_font_size = 15
+from common import make_fig, GOOD_RET
 
 
-def save_figure(name):
-    # you don't want to save the figures, make this "False"
-    do_save = True
-    # you can use the commented line below to put figures in a folder (i.e. "figs") that you have made
-    # fig_dir = './figs/'
-    # otherwise, the line below saves it to the current folder"
-    fig_dir = './'
-    if do_save:
-        plt.savefig(fig_dir + name, bbox_inches='tight')
-
-
-def make_fig(name, x_array, y1_array, y1_label="", y2_array=None, y2_label="",
-             y3_array=None, y3_label="", y4_array=None, y4_label="",
-             y5_array=None, y5_label="", x_label="",
-             y_label="", x_lima=None, x_limb=None, y_lima=None, y_limb=None, loc=2):
-    # a general purpose plotting routine; can plot between 1 and 5 curves
-    fig, ax = plt.subplots(figsize=(fig_width, fig_height))
-    ax.plot(x_array, y1_array, label=y1_label, linewidth=2, color='blue')
-    if y2_array is not None:
-        ax.plot(x_array, y2_array, label=y2_label, ls='--', linewidth=2, color='orange')
-    if y3_array is not None:
-        ax.plot(x_array, y3_array, label=y3_label, ls=':', linewidth=3, color='green')
-    if y4_array is not None:
-        ax.plot(x_array, y4_array, label=y4_label, ls='-.', linewidth=3, color='red')
-    if y5_array is not None:
-        ax.plot(x_array, y5_array, label=y5_label, ls='-', linewidth=3, color='yellow')
-    ax.set_xlabel(x_label, fontsize=axis_font_size)
-    ax.set_ylabel(y_label, fontsize=axis_font_size)
-    if x_limb is not None:
-        if x_lima is None:
-            x_lima = 0.0
-        ax.set_xlim([x_lima, x_limb])
-
-    if y_limb is not None:
-        if y_lima is None:
-            y_lima = 0.0
-        ax.set_ylim([y_lima, y_limb])
-    ax.tick_params(labelsize=tick_font_size)
-    ax.xaxis.set_minor_locator(AutoMinorLocator(5))
-    ax.yaxis.set_minor_locator(AutoMinorLocator(5))
-    if y2_array is not None:
-        ax.legend(loc=loc, fontsize=tick_font_size, )
-    save_figure(name)
+__author__ = 'hbmayes'
 
 
 def sys_odes(y_vector, w, ka, keq, kc, alpha, cto, fto):
