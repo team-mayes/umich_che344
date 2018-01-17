@@ -12,6 +12,7 @@ from matplotlib.patches import Rectangle
 import csv
 import errno
 import numpy as np
+from scipy import special
 import six
 import sys
 from contextlib import contextmanager
@@ -28,13 +29,15 @@ GOOD_RET = 0
 INPUT_ERROR = 1
 
 # physical constants
-J_TO_CAL = 4.184
+J_IN_CAL = 4.184  # conversion factor J/cal = kJ/kcal
 R_J = 8.314472  # J / K mol
-R_CAL = R_J / J_TO_CAL
+R_KJ = 0.001 * R_J  # kJ / K mol
+R_CAL = R_J / J_IN_CAL
 R_KCAL = R_CAL * 0.001
 R_BAR = R_J * 0.001 # bar-L / mol-K
 R_ATM = 0.082057338  # atm-L / mol-K
 K_0C = 273.15  # Temp in Kelvin at 0 degrees C
+AVO = 6.022140857e23 # avogadro's number, mol-1, from NIST on 2018-01-15
 
 # for figures
 DEF_FIG_WIDTH = 10
@@ -96,14 +99,43 @@ def silent_remove(filename, disable=False):
 
 # Conversions
 
-def temp_c_to_k(temp_in_C):
+def temp_c_to_k(temp_in_c):
     """
     simple conversion
-    :param temp_in_C:
+    :param temp_in_c: temp in Celsius
     :return: temp in K
     """
-    return temp_in_C + K_0C
+    return temp_in_c + K_0C
 
+
+def temp_k_to_c(temp_in_k):
+    """
+    simple conversion
+    :param temp_in_k: temp in Kelvin
+    :return: temp in Celsius
+    """
+    return temp_in_k - K_0C
+
+
+def j_to_cal(energy_joules):
+    """
+    simple conversion
+    :param energy_joules: energy in joules
+    :return: energy in calories
+    """
+    return energy_joules / J_IN_CAL
+
+
+def cal_to_j(energy_cal):
+    """
+    simple conversion
+    :param energy_cal: energy in calories
+    :return: energy in Joules
+    """
+    return energy_cal * J_IN_CAL
+
+
+# Kinetics equations
 
 def k_at_new_temp(k_ref, e_a, r_gas, t_ref, t_new):
     """
@@ -116,6 +148,53 @@ def k_at_new_temp(k_ref, e_a, r_gas, t_ref, t_new):
     :return: k at the "new' temperature, t_ref, in the same units as the given k_ref
     """
     return k_ref * np.exp((-e_a/r_gas)*(1/t_new - 1/t_ref))
+
+
+def k_from_a_ea(a, e_a, temp, r_gas):
+    """
+    convert using "alternate" form of Arrhenius eq
+    :param a: pre-exponential factor
+    :param e_a: activation energy with units consistent with given r_gas
+    :param temp: temperature in K
+    :param r_gas: universal gas constant in units consistent with e_a and temps
+    """
+    return a * np.exp(-e_a/(r_gas*temp))
+
+
+def eq_3_20(energy, temp, gas_const=R_KCAL):
+    """
+    fraction of moles with energy specified at temperature specified
+    :param energy: energy in kcal/mol unless other gas constant used
+    :param temp: temperature in K
+    :param gas_const: universal gas contanst in correct units (default is Kcal/mol)
+    :return fraction
+    """
+    return 2.0 * np.pi * np.power(1 / (np.pi * gas_const * temp), 1.5) * np.sqrt(energy) * np.exp(
+        -energy / (gas_const * temp))
+
+
+def eq_3_23(temp, ea, gas_const=R_KCAL):
+    """
+    fraction of moles with energy specified at temperature specified
+    :param temp: temperature in K
+    :param ea: activation energy in kcal/mol unless other gas constant used
+    :param gas_const: universal gas constant in correct units (default is Kcal/mol)
+    :return fraction
+    """
+    return np.sqrt(4.0 * ea / (np.pi * gas_const * temp)) * np.exp(-ea / (gas_const * temp))
+
+
+def eq_3_20integrated(temp, ea, gas_const=R_KCAL):
+    """
+    fraction of moles with energy specified at temperature specified
+    :param temp: temperature in K
+    :param ea: activation energy in kcal/mol unless other gas constant used
+    :param gas_const: universal gas constant in correct units (default is Kcal/mol)
+    :return fraction
+    """
+    gamma = ea / (gas_const * temp)
+    return np.sqrt(4.0 * gamma / np.pi) * np.exp(-gamma) + special.erfc(np.sqrt(gamma))
+
 
 
 # LOGIC

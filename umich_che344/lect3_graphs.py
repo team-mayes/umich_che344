@@ -7,45 +7,9 @@ from __future__ import print_function
 
 import sys
 import numpy as np
-from scipy import special
-from common import make_fig, GOOD_RET, R_KCAL
+from common import make_fig, GOOD_RET, eq_3_20, eq_3_23, eq_3_20integrated
 
 __author__ = 'hbmayes'
-
-
-def eq_3_20(energy, temp, gas_const=R_KCAL):
-    """
-    fraction of moles with energy specified at temperature specified
-    :param energy: energy in kcal/mol unless other gas constant used
-    :param temp: temperature in K
-    :param gas_const: universal gas contanst in correct units (default is Kcal/mol)
-    :return fraction
-    """
-    return 2.0 * np.pi * np.power(1 / (np.pi * gas_const * temp), 1.5) * np.sqrt(energy) * np.exp(
-        -energy / (gas_const * temp))
-
-
-def eq_3_23(temp, ea, gas_const=R_KCAL):
-    """
-    fraction of moles with energy specified at temperature specified
-    :param temp: temperature in K
-    :param ea: activation energy in kcal/mol unless other gas constant used
-    :param gas_const: universal gas constant in correct units (default is Kcal/mol)
-    :return fraction
-    """
-    return np.sqrt(4.0 * ea / (np.pi * gas_const * temp)) * np.exp(-ea / (gas_const * temp))
-
-
-def eq_3_20integrated(temp, ea, gas_const=R_KCAL):
-    """
-    fraction of moles with energy specified at temperature specified
-    :param temp: temperature in K
-    :param ea: activation energy in kcal/mol unless other gas constant used
-    :param gas_const: universal gas constant in correct units (default is Kcal/mol)
-    :return fraction
-    """
-    gamma = ea / (gas_const * temp)
-    return np.sqrt(4.0 * gamma / np.pi) * np.exp(-gamma) + special.erfc(np.sqrt(gamma))
 
 
 def graph_alg_eq():
@@ -97,10 +61,10 @@ def graph_int():
     """
     fig_name = 'lect3_frac_energy_at_least'
     # x-axis
-    t_start = 0.001  # initial energy
-    t_end = 1200.0  # final energy
+    temp_start = 0.001  # initial temp in K
+    temp_end = 1200.0  # final temp in K
     num_steps = 2001  # for solving/graphing
-    temp_range = np.linspace(t_start, t_end, num_steps)
+    temp_range = np.linspace(temp_start, temp_end, num_steps)
 
     # y-axis
     ea = 4.0
@@ -110,7 +74,7 @@ def graph_int():
     make_fig(fig_name, temp_range, frac_e_anal, y1_label="analytical",
              y2_array=frac_e_approx, y2_label="approximate", color2="red",
              x_label=r'temperature (K)', y_label=r'fraction with E $>$ E$_A = 4.0$',
-             x_lima=0.0, x_limb=t_end,
+             x_lima=0.0, x_limb=temp_end,
              y_lima=0.0, y_limb=1.0,
              fig_width=8, fig_height=4,
              )
@@ -122,7 +86,7 @@ def graph_int():
     # make_fig(fig_name + "25", temp_range, frac_e_anal, y1_label="analytical",
     #          y2_array=frac_e_approx, y2_label="approximate", color2="red",
     #          x_label=r'temperature (K)', y_label=r'fraction with E $>$ E$_A = 12.0$',
-    #          x_lima=0.0, x_limb=t_end,
+    #          x_lima=0.0, x_limb=temp_end,
     #          y_lima=0.0, y_limb=0.2,
     #          fig_width=8, fig_height=4,
     #          )

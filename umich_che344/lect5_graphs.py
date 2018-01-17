@@ -9,11 +9,12 @@ import sys
 import numpy as np
 from scipy.integrate import odeint
 from scipy.optimize import fsolve
-from common import make_fig, GOOD_RET
+from common import make_fig, GOOD_RET, temp_c_to_k, k_from_a_ea, R_KJ, AVO, R_KCAL, cal_to_j, temp_k_to_c
 
 __author__ = 'hbmayes'
 
 
+# noinspection PyUnusedLocal
 def ode(y, t, k, k_c, cao, nu_0):
     """
     :param y: independent variable
@@ -21,6 +22,7 @@ def ode(y, t, k, k_c, cao, nu_0):
     :param k: rate coefficient
     :param k_c: equilibrium coefficient
     :param cao: initial concentration
+    :param nu_0: initial volumetric flow rate
     :return: dy_dt
     """
     vol_change = 1-0.5*y
@@ -28,6 +30,7 @@ def ode(y, t, k, k_c, cao, nu_0):
     return 2.0 * k / nu_0 * (cao * np.square((1.0-y)/vol_change) - y * 0.5 / k_c / vol_change)
 
 
+# noinspection PyTypeChecker
 def solve_ode():
     """
     Solve single ODE
@@ -80,9 +83,9 @@ def solve_ode():
              fig_width=8, fig_height=4,
              )
 
-    eps = -0.5
     x_leven = np.linspace(0.0, 0.7, 1001)  # conversion, unitless
     y2 = 1.0 / ode(x_leven, 1.0, k, k_c, cao, nu_0)
+    # eps = -0.5
     # y_leven = nu_0 * k_c/k * np.square(1 + eps * x_leven) / (2 * k_c * cao * np.square(1-x_leven) -
     #                                                          x_leven * (1 + eps * x_leven))
     make_fig(fig_name + "_levenspiel", x_leven, y2,
@@ -97,6 +100,36 @@ def main():
     """ Runs the main program.
     """
     solve_ode()
+
+    # in class demo of range
+    t1_c = 625  # degrees Celsius
+    t2_c = 725  # degrees Celsius
+    e_a = 29.25  # kJ/mol
+    a = 7.27e-11  # cm^3/molecules-s
+    a_moles = a * AVO * 0.001 * 60.0  # L /mol-min
+    temp1 = temp_c_to_k(t1_c)
+    temp2 = temp_c_to_k(t2_c)
+    k1 = k_from_a_ea(a_moles, e_a, temp1, R_KJ)
+    k2 = k_from_a_ea(a_moles, e_a, temp2, R_KJ)
+    print("Given A = {} cm^3/molecules-s, E_A = {} kJ/mol: ".format(a, e_a))
+    print("              at {} C ({} K), k = {:.2e} L/mol-min".format(t1_c, temp1, k1))
+    print("              at {} C ({} K), k = {:.2e} L/mol-min".format(t2_c, temp2, k2))
+
+    e_a_cal = 13.0  # kcal/mol
+    e_a = cal_to_j(e_a_cal)  # kJ/mol
+    temp3 = 333.0  # k
+    temp4 = temp3 + 100.0
+    t3_c = temp_k_to_c(temp3)
+    t4_c = temp_k_to_c(temp4)
+    r = 1.69 * 1e-6 / 1000.0 * 60.0
+
+    a = r/k_from_a_ea(1, e_a, temp3, R_KCAL)
+    k3 = k_from_a_ea(a, e_a, temp3, R_KCAL)
+    k4 = k_from_a_ea(a, e_a, temp4, R_KCAL)
+
+    print("\nGiven E_A = {:.1f} kcal/mol ({:.1f} kJ/mol):".format(e_a_cal, e_a))
+    print("       Given: at  {:.0f} C ({} K), k = {:.2e} L/mol-min".format(t3_c, temp3, k3))
+    print("  Calculated: at {:.0f} C ({} K), k = {:.2e} L/mol-min".format(t4_c, temp4, k4))
 
     return GOOD_RET  # success
 
