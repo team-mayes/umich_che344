@@ -196,7 +196,6 @@ def eq_3_20integrated(temp, ea, gas_const=R_KCAL):
     return np.sqrt(4.0 * gamma / np.pi) * np.exp(-gamma) + special.erfc(np.sqrt(gamma))
 
 
-
 # LOGIC
 
 def create_out_fname(src_file, prefix='', suffix='', remove_prefix=None, base_dir=None, ext=None):

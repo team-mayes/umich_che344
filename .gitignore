@@ -67,11 +67,4 @@ target/
 
 # This project
 to_sort
-exams
-hw_solns
 figs
-umich_che344/hw*
-tests/test_assign_groups.py
-umich_che344/assign_groups.py
-tests/test_data/assign_groups/*
-umich_che344/midterm*
