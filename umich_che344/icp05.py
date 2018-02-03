@@ -6,7 +6,7 @@ Calcs for HW2
 from __future__ import print_function
 
 import sys
-from common import GOOD_RET, R_KCAL, temp_c_to_k, k_at_new_temp
+from umich_che344.common import GOOD_RET, R_KCAL, temp_c_to_k, k_at_new_temp
 
 __author__ = 'hbmayes'
 

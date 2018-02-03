@@ -15,7 +15,6 @@ import unittest
 from umich_che344 import umich_che344
 
 
-
 class TestUmich_che344(unittest.TestCase):
 
     def setUp(self):

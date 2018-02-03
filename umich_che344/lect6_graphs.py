@@ -173,6 +173,12 @@ def main():
     cao = 1.0  # mol/L
     print("term: {:.2f}".format(1.0/(k*tau*cao) + 56.0))
 
+    # CA PE exam question
+    x1 = 0.55
+    kc = 5.8
+    x2 = (1.0-np.square(1.-(1.+1./kc)*x1))/(1.+1./kc)
+    print("P5-17: X2 = {:.3f}".format(x2))
+
     return GOOD_RET  # success
 
 

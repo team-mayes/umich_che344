@@ -42,6 +42,7 @@ def graph_alg_eq():
              fig_width=8, fig_height=4,
              )
 
+
     x_fill = np.linspace(4.0, 60.0)
     y_fill = eq_3_20(x_fill, 600.0)
     y2_fill = eq_3_20(x_fill, 1000.0)
